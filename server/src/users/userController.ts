@@ -5,9 +5,10 @@ import {
     getAllUsers,
     getUser,
     updateUser,
+    usernameAlreadyExists
 } from "./userService";
 import {body, param, validationResult} from "express-validator";
-import {UserNotFound} from "./userErrors";
+import {UserNotFound, UserWithSameUsernameError} from "./userErrors";
 import {User} from "./user";
 import {handleException} from "../functions";
 
@@ -50,6 +51,24 @@ export function useUsersAPIs(app: Express, isLoggedIn: RequestHandler) {
         }
     )
 
+    // verify unique username
+    app.get(`${baseURL}/username/:username`,
+        param("username").isString(),
+        async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                res.status(ParameterError.code).json(new ParameterError("The username must be a string!"));
+                return
+            }
+
+            if (await usernameAlreadyExists(req.params.username)) {
+                res.status(UserWithSameUsernameError.code).json(new UserWithSameUsernameError());
+            } else {
+                res.status(200).end();
+            }
+        }
+    )
+
     // update user
     app.put(baseURL,
         isLoggedIn,
@@ -65,15 +84,19 @@ export function useUsersAPIs(app: Express, isLoggedIn: RequestHandler) {
             }
 
             const userId = (req.user as User).id;
-            await updateUser(
-                userId,
-                req.body.email,
-                req.body.name,
-                req.body.surname,
-                req.body.username
-            );
+            try {
+                await updateUser(
+                    userId,
+                    req.body.email,
+                    req.body.name,
+                    req.body.surname,
+                    req.body.username
+                );
 
-            res.status(200).end();
+                res.status(200).end();
+            } catch (err) {
+                handleException(err, res);
+            }
         }
     )
 }

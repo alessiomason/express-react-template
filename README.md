@@ -74,6 +74,12 @@ Both the client and the server offer few basic functionalities and are merely in
 		- `GET /api/users/:userId`
 			- Get user by id
 			- Response code: 200
+			- Possible errors:
+				- `422 User with same username already exists`
+
+		- `GET /api/users/username/:username`
+			- Verify the uniqueness of the username
+			- Response code: 200
 			- Response body:
 				- User
 

@@ -6,6 +6,7 @@ import "./SignUpPage.css";
 import logo from "../images/logos/logo.png";
 import signUpApis from "../api/signUpApis";
 import {checkValidEmail, checkValidPassword} from "../functions";
+import userApis from "../api/userApis";
 
 function SignUpPage() {
     const navigate = useNavigate();
@@ -15,6 +16,8 @@ function SignUpPage() {
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
     const [username, setUsername] = useState("");
+    const [verifiedUsername, setVerifiedUsername] = useState(false);
+    const [invalidUsername, setInvalidUsername] = useState(false);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [invalidPassword, setInvalidPassword] = useState(false);
@@ -28,6 +31,20 @@ function SignUpPage() {
         if (email && !checkValidEmail(email)) {
             setInvalidEmail(true);
         }
+    }
+
+    function handleUsernameCheck() {
+        if (username === "") {
+            setVerifiedUsername(false);
+            setInvalidUsername(false);
+        }
+
+        userApis.verifyUsernameUniqueness(username)
+            .then(unique => {
+                setVerifiedUsername(true);
+                setInvalidUsername(!unique);
+            })
+            .catch(err => console.error(err))
     }
 
     function handlePasswordCheck() {
@@ -47,6 +64,9 @@ function SignUpPage() {
         handlePasswordCheck();
         if (password !== confirmPassword) {
             setInvalidPassword(true);
+            return
+        }
+        if (verifiedUsername && invalidUsername) {  // username can be null
             return
         }
 
@@ -83,15 +103,16 @@ function SignUpPage() {
                         <Col/>
                         <Col sm={6}>
 
-                                <SignUpPane
-                                    email={email} setEmail={setEmail} invalidEmail={invalidEmail}
-                                    handleEmailCheck={handleEmailCheck} name={name} setName={setName}
-                                    surname={surname} setSurname={setSurname}
-                                    username={username} setUsername={setUsername}
-                                    password={password} setPassword={setPassword}
-                                    confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
-                                    invalidPassword={invalidPassword} handlePasswordCheck={handlePasswordCheck}
-                                    showPasswordRequirements={showPasswordRequirements} errorMessage={errorMessage}/>
+                            <SignUpPane
+                                email={email} setEmail={setEmail} invalidEmail={invalidEmail}
+                                handleEmailCheck={handleEmailCheck} name={name} setName={setName}
+                                surname={surname} setSurname={setSurname}
+                                username={username} setUsername={setUsername} verifiedUsername={verifiedUsername}
+                                invalidUsername={invalidUsername} handleUsernameCheck={handleUsernameCheck}
+                                password={password} setPassword={setPassword}
+                                confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
+                                invalidPassword={invalidPassword} handlePasswordCheck={handlePasswordCheck}
+                                showPasswordRequirements={showPasswordRequirements} errorMessage={errorMessage}/>
                         </Col>
                         <Col/>
                     </Row>
@@ -119,6 +140,9 @@ interface SignUpPaneProps {
     setSurname: React.Dispatch<React.SetStateAction<string>>
     username: string
     setUsername: React.Dispatch<React.SetStateAction<string>>
+    verifiedUsername: boolean
+    invalidUsername: boolean
+    handleUsernameCheck: () => void
     password: string
     setPassword: React.Dispatch<React.SetStateAction<string>>
     confirmPassword: string
@@ -134,7 +158,7 @@ function SignUpPane(props: SignUpPaneProps) {
         <>
             <Row>
                 <Col>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><EnvelopeAt/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Email (richiesta al login)">
                             <Form.Control type="email" placeholder="Email (richiesta al login)" value={props.email}
@@ -157,16 +181,20 @@ function SignUpPane(props: SignUpPaneProps) {
                                           onChange={ev => props.setSurname(ev.target.value)}/>
                         </FloatingLabel>
                     </InputGroup>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><Person/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Username">
                             <Form.Control type="text" placeholder="Username" value={props.username}
-                                          onChange={ev => props.setUsername(ev.target.value)}/>
+                                          isValid={props.verifiedUsername && !props.invalidUsername}
+                                          isInvalid={props.verifiedUsername && props.invalidUsername}
+                                          onChange={ev => props.setUsername(ev.target.value)}
+                                          onBlur={props.handleUsernameCheck}/>
+                            <Form.Control.Feedback type="invalid" tooltip>Username already exists!</Form.Control.Feedback>
                         </FloatingLabel>
                     </InputGroup>
 
                     <h6 className="mt-4">Scegli la password</h6>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><Lock/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Password">
                             <Form.Control type="password" placeholder="Password" isInvalid={props.invalidPassword}
@@ -175,7 +203,7 @@ function SignUpPane(props: SignUpPaneProps) {
                                           onBlur={props.handlePasswordCheck}/>
                         </FloatingLabel>
                     </InputGroup>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><Lock/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Conferma password">
                             <Form.Control type="password" placeholder="Conferma password"

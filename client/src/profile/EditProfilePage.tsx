@@ -18,6 +18,8 @@ function EditProfilePage(props: EditProfilePageProps) {
     const [name, setName] = useState(props.user.name ?? "");
     const [surname, setSurname] = useState(props.user.surname ?? "");
     const [username, setUsername] = useState(props.user.username ?? "");
+    const [verifiedUsername, setVerifiedUsername] = useState(false);
+    const [invalidUsername, setInvalidUsername] = useState(false);
 
     function handleEmailCheck() {
         setInvalidEmail(false);
@@ -28,10 +30,27 @@ function EditProfilePage(props: EditProfilePageProps) {
         }
     }
 
+    function handleUsernameCheck() {
+        if (username === "" || username === props.user.username) {
+            setVerifiedUsername(false);
+            setInvalidUsername(false);
+        } else {
+            userApis.verifyUsernameUniqueness(username)
+                .then(unique => {
+                    setVerifiedUsername(true);
+                    setInvalidUsername(!unique);
+                })
+                .catch(err => console.error(err))
+        }
+    }
+
     function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault();
 
         handleEmailCheck();
+        if (verifiedUsername && invalidUsername) {  // username can be null
+            return
+        }
 
         const user = new User(
             props.user.id,
@@ -80,13 +99,20 @@ function EditProfilePage(props: EditProfilePageProps) {
                                           onChange={ev => setSurname(ev.target.value)}/>
                         </FloatingLabel>
                     </InputGroup>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><Person/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Username">
                             <Form.Control type="text" placeholder="Username" value={username}
-                                          onChange={ev => setUsername(ev.target.value)}/>
+                                          isValid={verifiedUsername && !invalidUsername}
+                                          isInvalid={verifiedUsername && invalidUsername}
+                                          onChange={ev => setUsername(ev.target.value)}
+                                          onBlur={handleUsernameCheck}/>
+                            <Form.Control.Feedback type="invalid" tooltip>Username already
+                                exists!</Form.Control.Feedback>
                         </FloatingLabel>
                     </InputGroup>
+                    <p>veri {verifiedUsername ? 1 : 0}</p>
+                    <p>inva {invalidUsername ? 1 : 0}</p>
                 </Col>
                 <Col/>
             </Row>

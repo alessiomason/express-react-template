@@ -1,6 +1,6 @@
 import {knex} from "../database/db";
 import {NewUser, User} from "./user";
-import {UserWithSameUsernameError} from "./userErrors";
+import {UserNotFound, UserWithSameUsernameError} from "./userErrors";
 
 export async function getAllUsers() {
     const users = await knex("users").select();
@@ -15,14 +15,14 @@ export async function getAllUsers() {
             undefined,
             undefined,
             user.registrationDate
-        )
-    })
+        );
+    });
 }
 
 export async function getUser(id: number) {
     const user = await knex("users")
         .first()
-        .where({id: id})
+        .where({id: id});
 
     if (!user) return
 
@@ -41,7 +41,7 @@ export async function getUser(id: number) {
 export async function getFullUser(id: number) {
     const user = await knex<User>("users")
         .first()
-        .where({id: id})
+        .where({id: id});
 
     if (!user) return
 
@@ -60,7 +60,7 @@ export async function getFullUser(id: number) {
 export async function getUserFromEmail(email: string) {
     const user = await knex<User>("users")
         .first()
-        .where({email: email})
+        .where({email: email});
 
     if (!user) return
 
@@ -76,12 +76,16 @@ export async function getUserFromEmail(email: string) {
     );
 }
 
-export async function createUser(newUser: NewUser) {
-    const existingUser = await knex<User>("users")
+export async function usernameAlreadyExists(username: string) {
+    const user = await knex<User>("users")
         .first()
-        .where({username: newUser.username})
+        .where({username: username});
 
-    if (existingUser) {
+    return user !== undefined
+}
+
+export async function createUser(newUser: NewUser) {
+    if (newUser.username !== undefined && await usernameAlreadyExists(newUser.username)) {
         throw new UserWithSameUsernameError();
     }
 
@@ -107,7 +111,7 @@ export async function saveUserPassword(userId: number, hashedPassword: Buffer, s
         .update({
             hashedPassword: hashedPassword,
             salt: salt
-        })
+        });
 }
 
 // `undefined` values are skipped, not updated
@@ -118,15 +122,24 @@ export async function updateUser(
     surname: string | undefined,
     username: string | undefined
 ) {
+    const user = await getUser(id);
+    if (!user) {
+        throw new UserNotFound();
+    }
+
+    if (username !== undefined && username !== user.username && await usernameAlreadyExists(username)) {
+        throw new UserWithSameUsernameError();
+    }
+
     // check that at least one field is changing to avoid a faulty query
     if (email !== undefined || name !== undefined || surname !== undefined || username !== undefined) {
         await knex("users")
-            .where("id", id)
+            .where("id", user.id)
             .update({
                 email: email,
                 name: name,
                 surname: surname,
                 username: username
-            })
+            });
     }
 }

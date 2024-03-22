@@ -55,7 +55,7 @@ function EditPasswordPage() {
                                           onChange={ev => setOldPassword(ev.target.value)}/>
                         </FloatingLabel>
                     </InputGroup>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><LockFill/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Nuova password">
                             <Form.Control type="password" placeholder="Nuova password" isInvalid={invalidPassword}
@@ -63,7 +63,7 @@ function EditPasswordPage() {
                                           onChange={ev => setPassword(ev.target.value)}/>
                         </FloatingLabel>
                     </InputGroup>
-                    <InputGroup className="padded-form-input">
+                    <InputGroup hasValidation className="padded-form-input">
                         <InputGroup.Text><LockFill/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Conferma nuova password">
                             <Form.Control type="password" placeholder="Conferma nuova password"

@@ -13,3 +13,13 @@
 .success {
     color: limegreen;
 }
+
+.form-control {
+    border-top-right-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+}
+
+.input-group-text {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}

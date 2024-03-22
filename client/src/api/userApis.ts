@@ -28,6 +28,18 @@ async function getUser(userId: number) {
     } else await handleApiError(response);
 }
 
+async function verifyUsernameUniqueness(username: string) {
+    const response = await fetch(new URL(`users/username/${username}`, apiUrl), {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    return response.ok;
+}
+
 async function updateUser(user: User) {
     const response = await fetch(new URL("users", apiUrl), {
         method: "PUT",
@@ -43,5 +55,5 @@ async function updateUser(user: User) {
     } else await handleApiError(response);
 }
 
-const userApis = {getAllUsers, getUser, updateUser};
+const userApis = {getAllUsers, getUser, verifyUsernameUniqueness, updateUser};
 export default userApis;
