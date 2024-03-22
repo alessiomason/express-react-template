@@ -1,0 +1,15 @@
+.page-title {
+    padding-left: 25px;
+}
+
+.error {
+    color: #d50000;
+}
+
+.warning {
+    color: goldenrod;
+}
+
+.success {
+    color: limegreen;
+}
