@@ -1,6 +1,6 @@
 import {Button, Col, FloatingLabel, Form, InputGroup, Row} from "react-bootstrap";
 import {User} from "../models/user";
-import {CarFront, EnvelopeAt, Floppy, Person, Telephone} from "react-bootstrap-icons";
+import {EnvelopeAt, Person} from "react-bootstrap-icons";
 import {useNavigate} from "react-router-dom";
 import React, {useState} from "react";
 import userApis from "../api/userApis";
@@ -111,8 +111,6 @@ function EditProfilePage(props: EditProfilePageProps) {
                                 exists!</Form.Control.Feedback>
                         </FloatingLabel>
                     </InputGroup>
-                    <p>veri {verifiedUsername ? 1 : 0}</p>
-                    <p>inva {invalidUsername ? 1 : 0}</p>
                 </Col>
                 <Col/>
             </Row>
