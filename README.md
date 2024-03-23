@@ -1,4 +1,4 @@
-# Gestionale
+# Express React template
 
 The repository contains a template for building a web application in its client and server part. The web application is developed using the Express framework for the server and React for the client.  
 Both the client and the server offer few basic functionalities and are merely intended to be a starting point to develop a fully-fledged application.

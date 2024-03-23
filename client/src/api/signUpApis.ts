@@ -2,7 +2,7 @@ import {apiUrl} from "./apisValues";
 import {handleApiError} from "./handleApiError";
 
 async function signUp(
-    email: string | undefined,
+    email: string,
     name: string | undefined,
     surname: string | undefined,
     username: string | undefined,

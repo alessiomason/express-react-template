@@ -17,17 +17,18 @@ function EditPasswordPage() {
         setInvalidPassword(false);
         setShowPasswordRequirements(false);
 
-        if (!checkValidPassword(password)) {
+        const valid = checkValidPassword(password);
+        if (!valid) {
             setInvalidPassword(true);
             setShowPasswordRequirements(true);
         }
+        return valid;
     }
 
     function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault();
 
-        handlePasswordCheck();
-        if (password !== confirmPassword) {
+        if (!handlePasswordCheck() || password !== confirmPassword) {
             setInvalidPassword(true);
             return
         }

@@ -170,7 +170,7 @@ function SignUpPane(props: SignUpPaneProps) {
                     <InputGroup className="padded-form-input">
                         <InputGroup.Text><Person/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Name">
-                            <Form.Control type="tel" placeholder="Name" value={props.name}
+                            <Form.Control type="text" placeholder="Name" value={props.name}
                                           onChange={ev => props.setName(ev.target.value)}/>
                         </FloatingLabel>
                     </InputGroup>

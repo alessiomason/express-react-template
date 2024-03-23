@@ -123,7 +123,7 @@ export function useAuthenticationAPIs(app: Express, isLoggedIn: RequestHandler) 
         });
 
     // update password
-    app.put("api/password",
+    app.put("/api/password",
         isLoggedIn,
         body("oldPassword").isString(),
         body("newPassword").isString(),
