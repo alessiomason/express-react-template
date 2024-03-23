@@ -7,8 +7,8 @@ import {Credentials} from "../models/credentials";
 import {checkValidEmail} from "../functions";
 
 function LoginPage(props: any) {
-    const [email, setEmail] = useState("alessio.mason@me.com");
-    const [password, setPassword] = useState("password");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [invalidEmail, setInvalidEmail] = useState(false);
     const [invalidPassword, setInvalidPassword] = useState(false);
 
