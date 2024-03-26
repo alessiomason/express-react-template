@@ -24,9 +24,13 @@ function App() {
 }
 
 function App2() {
-    const [loggedIn, setLoggedIn] = useState(false);
+    // user is initially read from local storage to maintain login state between page refreshes,
+    // but is then always checked by the checkAuth() function (that checks with the server)
+    const initialUserJson = window.localStorage.getItem("user");
+    const initialUser = initialUserJson ? JSON.parse(initialUserJson) as User : undefined;
+    const [user, setUser] = useState(initialUser);
     const [dirtyUser, setDirtyUser] = useState(false);
-    const [user, setUser] = useState<User | undefined>(undefined);
+    const loggedIn = user !== undefined;
     const [message, setMessage] = useState("");
 
     const navigate = useNavigate();
@@ -42,6 +46,14 @@ function App2() {
         }
     }, [dirtyUser]);
 
+    useEffect(() => {
+        if (user) {
+            window.localStorage.setItem("user", JSON.stringify(user));
+        } else {
+            window.localStorage.removeItem("user");
+        }
+    }, [user]);
+
     // run once, at app load
     useEffect(() => {
         // check if already logged in
@@ -51,7 +63,6 @@ function App2() {
     async function checkAuth() {
         try {
             const user = await loginApis.getUserInfo();
-            setLoggedIn(true);
             setUser(user);
         } catch (_err) {
             // do not log it, otherwise error logged before every login
@@ -61,7 +72,6 @@ function App2() {
     function doLogin(credentials: Credentials) {
         loginApis.login(credentials)
             .then(user => {
-                setLoggedIn(true);
                 setUser(user);
                 setMessage("");
                 navigate("/");
@@ -75,7 +85,6 @@ function App2() {
     function doLogout() {
         loginApis.logout()
             .then(() => {
-                setLoggedIn(false);
                 setUser(undefined);
                 setMessage("");
                 navigate("/login");
