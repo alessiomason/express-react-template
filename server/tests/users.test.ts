@@ -10,7 +10,7 @@ import dayjs = require("dayjs");
 
 jest.mock("../src/database/db", () => {
     const Knex = require("knex");
-    const { MockClient } = require("knex-mock-client");
+    const {MockClient} = require("knex-mock-client");
     return {
         knex: Knex({client: MockClient}),
     };
@@ -35,14 +35,22 @@ describe("Test users APIs", () => {
         undefined,
         undefined
     );
-
+    const otherUser = new User(
+        faker.number.int(),
+        faker.internet.email(),
+        faker.person.firstName(),
+        faker.person.lastName(),
+        faker.person.firstName(),
+        undefined,
+        undefined,
+        undefined
+    );
     const newUser = new NewUser(
         email,
         name,
         surname,
         username
     );
-    const otherUserId = faker.number.int();
 
     beforeAll(async () => {
         const setupResult = await setupTests();
@@ -75,20 +83,43 @@ describe("Test users APIs", () => {
         expect(res.body).toEqual(user);
     })
 
-    test("Get single user not found", async() => {
-        tracker.on.select("users").response(undefined)
+    test("Get single user not found", async () => {
+        tracker.on.select("users").response(undefined);
 
         const res = await new Request(app).get(`${baseURL}/${faker.number.int()}`).set("Cookie", session);
 
-        const expectedError = new UserNotFound()
-        expect(res.statusCode).toBe(UserNotFound.code)
-        expect(res.body).toEqual(expectedError)
+        const expectedError = new UserNotFound();
+        expect(res.statusCode).toBe(expectedError.statusCode);
+        expect(res.body).toEqual(expectedError);
     })
 
     test("Update user", async () => {
+        tracker.on.select("users").responseOnce(otherUser);
+        tracker.on.select("users").responseOnce(undefined);
         tracker.on.update("users").response(null);
 
         const res = await new Request(app).put(baseURL).send(newUser).set("Cookie", session);
         expect(res.statusCode).toBe(200);
+    })
+
+    test("Update user not found", async () => {
+        tracker.on.select("users").response(undefined);
+
+        const res = await new Request(app).put(baseURL).send(newUser).set("Cookie", session);
+
+        const expectedError = new UserNotFound();
+        expect(res.statusCode).toBe(expectedError.statusCode);
+        expect(res.body).toEqual(expectedError);
+    })
+
+    test("Update user username already exists", async () => {
+        tracker.on.select("users").responseOnce(otherUser);
+        tracker.on.select("users").responseOnce(newUser);
+
+        const res = await new Request(app).put(baseURL).send(newUser).set("Cookie", session);
+
+        const expectedError = new UserWithSameUsernameError();
+        expect(res.statusCode).toBe(expectedError.statusCode);
+        expect(res.body).toEqual(expectedError);
     })
 })

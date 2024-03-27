@@ -80,7 +80,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
+function isLoggedIn(req: Request, res: Response, next: NextFunction) {
     if (req.isAuthenticated())
         return next();
 
