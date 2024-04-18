@@ -21,7 +21,7 @@ Both the client and the server offer few basic functionalities and are merely in
 	- The client is developed in TypeScript using the React library and the Bootstrap framework
 
 ## System architecture
-The server exposes a set of APIs to operate and serves as static files the client, which in turn uses the APIs exposed by the server.
+The server exposes a set of APIs to operate and serves the client as static files, which in turn uses the APIs exposed by the server.
 
 ## Running the software
 The template is made to be deployed on a Heroku container, which runs the two scripts in the main `package.json`. Such scripts can be modified to run the web app elsewhere.  
@@ -45,7 +45,7 @@ The server requires several environment variables to operate. These are usually 
 - Mandatory
 	- `APP_URL`: the URL the client is served from (used for CORS) - for example, it might be `http://localhost:3000` if run locally;
 	- `DB_HOST`: the hostname of the database;
-	- `DB_PORT`: the port of the connection to the database;
+	- `DB_PORT`: the port to connect to the database;
 	- `DB_USERNAME`: the username for the database;
 	- `DB_PASSWORD`: the password for the database;
 	- `DB_NAME`: the name of the database;
@@ -91,80 +91,80 @@ Database tables needed:
 The server exposes several API:
 
 - System
-		- `GET /api/system/ping`
-			- Used to verify the connection to the server
-			- Response code: 200
-			- Response body: `"pong"`
-		- `GET /api/system/pingDB`
-			- Used to verify if the server is connected to the database
-			- Response code: 200
-			- Response body: `"Pong"` (or the corresponding value in the server)
+	- `GET /api/system/ping`
+		- Used to verify the connection to the server
+		- Response code: 200
+		- Response body: `"pong"`
+	- `GET /api/system/pingDB`
+		- Used to verify if the server is connected to the database
+		- Response code: 200
+		- Response body: `"Pong"` (or the corresponding value in the server)
 	
-	- Sign up
-		- `POST /api/signup`
-			- Create a new user
-			- Request body
-				- email: string
-				- name: string
-				- surname: string
-				- username: string
-				- password: string
-			- Response code: 200
+- Sign up
+	- `POST /api/signup`
+		- Create a new user
+		- Request body
+			- email: string
+			- name: string
+			- surname: string
+			- username: string
+			- password: string
+		- Response code: 200
 
-		- `PUT /api/password`
-			- Update the user's password
-			- Request body
-				- oldPassword: string
-				- newPassword: string
-			- Response code: 200
-			- Possible errors:
-				- `404 User not found`
-				- `422 Wrong password`
+	- `PUT /api/password`
+		- Update the user's password
+		- Request body
+			- oldPassword: string
+			- newPassword: string
+		- Response code: 200
+		- Possible errors:
+			- `404 User not found`
+			- `422 Wrong password`
+
+- Session
+	- `POST /api/sessions`
+		- Login
+		- Request body
+			- email: string
+			- password: string
+		- Response code: 200
+		- Possible errors:
+			- `422 Wrong email or password`
+
+	- `GET /api/sessions/current`
+		- Check whether the user is logged in or not
+		- Response code: 200
+		- Possible errors:
+			- `401 Non-authenticated user`
+
+	- `DELETE /api/sessions/current`
+		- Logout
+		- Response code: 200
 	
-	- Session
-		- `POST /api/sessions`
-			- Login
-			- Request body
-				- email: string
-				- password: string
-			- Response code: 200
-			- Possible errors:
-				- `422 Wrong email or password`
+- Users
+	- `GET /api/users`
+		- Get all users
+		- Response code: 200
+		- Response body:
+			- User[]
+	
+	- `GET /api/users/:userId`
+		- Get user by id
+		- Response code: 200
+		- Possible errors:
+			- `422 User with same username already exists`
 
-		- `GET /api/sessions/current`
-			- Check whether the user is logged in or not
-			- Response code: 200
-			- Possible errors:
-				- `401 Non-authenticated user`
+	- `GET /api/users/username/:username`
+		- Verify the uniqueness of the username
+		- Response code: 200
+		- Response body:
+			- User
 
-		- `DELETE /api/sessions/current`
-			- Logout
-			- Response code: 200
-		
-	- Users
-		- `GET /api/users`
-			- Get all users
-			- Response code: 200
-			- Response body:
-				- User[]
-		
-		- `GET /api/users/:userId`
-			- Get user by id
-			- Response code: 200
-			- Possible errors:
-				- `422 User with same username already exists`
-
-		- `GET /api/users/username/:username`
-			- Verify the uniqueness of the username
-			- Response code: 200
-			- Response body:
-				- User
-
-		- `PUT /api/users`
-			- Update the user
-			- Request body
-				- email: string | undefined
-				- name: string | undefined
-				- surname: string | undefined
-				- username: string | undefined
-			- Response code: 200
+	- `PUT /api/users`
+		- Update the user
+		- Request body
+			- email: string | undefined
+			- name: string | undefined
+			- surname: string | undefined
+			- username: string | undefined
+		- Response code: 200
