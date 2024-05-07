@@ -88,7 +88,7 @@ function EditProfilePage(props: EditProfilePageProps) {
                     <InputGroup className="padded-form-input">
                         <InputGroup.Text><Person/></InputGroup.Text>
                         <FloatingLabel controlId="floatingInput" label="Name">
-                            <Form.Control type="tel" placeholder="Name" value={name}
+                            <Form.Control type="text" placeholder="Name" value={name}
                                           onChange={ev => setName(ev.target.value)}/>
                         </FloatingLabel>
                     </InputGroup>
