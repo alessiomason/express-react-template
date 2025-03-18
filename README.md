@@ -21,10 +21,10 @@ Both the client and the server offer few basic functionalities and are merely in
 	- The client is developed in TypeScript using the React library and the Bootstrap framework
 
 ## System architecture
-The server exposes a set of APIs to operate and serves the client as static files, which in turn uses the APIs exposed by the server.
+The server exposes a set of APIs to operate and serves the client as a set of static files, which in turn uses the APIs exposed by the server.
 
 ## Running the software
-The template is made to be deployed on a Heroku container, which runs the two scripts in the main `package.json`. Such scripts can be modified to run the web app elsewhere.  
+The template is meant to be deployed in a Heroku container, which runs the two scripts in the main `package.json`. Such scripts can be modified to run the web app elsewhere.  
 To manually run the software, it would be advisable to manually run the server and, if not previously built, the client too.
 
 ### Running the client
@@ -55,7 +55,7 @@ The server requires several environment variables to operate. These are usually 
 	- `PORT`: the port on which the server has to be served; defaults to `3001` if absent.
 
 #### Client environment variables
-The client too requires an environment variable, to specify the URL of the server.  
+The client too requires an environment variable to specify the URL of the server.  
 If the client is run locally, the environment variable can be omitted (as the code defaults to consider the server located at `http://localhost:3000`).  
 Otherwise, the `REACT_APP_BASE_URL` environment variable is needed. If the client is served through the server, the environment variable has to be specified amongst the other variables for the server.
 
