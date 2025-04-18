@@ -22,7 +22,7 @@ function ProfilePage(props: ProfilePageProps) {
                 <Col md={8}>
                     <Row>
                         <Col className="d-flex justify-content-end me-3">
-                            <Button onClick={props.doLogout}>Logout</Button>
+                            <Button onClick={props.doLogout}>Esci</Button>
                         </Col>
                     </Row>
                     <Row>
