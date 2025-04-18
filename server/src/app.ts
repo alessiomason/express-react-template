@@ -84,7 +84,7 @@ function isLoggedIn(req: Request, res: Response, next: NextFunction) {
     if (req.isAuthenticated())
         return next();
 
-    return res.status(401).json({error: "This API requires an authenticated request!"});
+    res.status(401).json({error: "This API requires an authenticated request!"});
 }
 
 // expose the APIs

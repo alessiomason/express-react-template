@@ -1,4 +1,4 @@
-import passport from "passport";
+import passport, {Strategy} from "passport";
 const LocalStrategy = require("passport-local").Strategy;
 import {MockStrategy, setupSerializeAndDeserialize} from "passport-mock-strategy";
 import * as crypto from "crypto";
@@ -7,7 +7,7 @@ import {getUser, getUserFromEmail} from "../users/userService";
 export function setupPassport() {
     // mock authentication strategy (for testing)
     if (process.env.NODE_ENV === "test") {
-        passport.use(new MockStrategy());
+        passport.use(new MockStrategy() as unknown as Strategy);
         setupSerializeAndDeserialize(passport);
         return
     }

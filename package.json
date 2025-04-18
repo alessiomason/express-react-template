@@ -1,5 +1,5 @@
 {
-  "name": "gestionale",
+  "name": "express-react-template",
   "author": "Alessio Mason",
   "description": "A template for a web application developed using the React and Express frameworks.",
   "license": "MIT",
@@ -10,6 +10,6 @@
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client && cd server && npm install && npm run build"
   },
   "engines": {
-    "node": "21.x"
+    "node": "22.x"
   }
 }
